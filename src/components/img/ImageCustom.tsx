@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
@@ -19,7 +20,7 @@ function ImageCustom({ url }: { url: string }) {
 
   useEffect(() => {
     if (url) {
-      getImagePreview(url);
+      getImagePreview();
     }
   }, [url]);
 

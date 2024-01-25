@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import ImageCustom from "@/components/img/ImageCustom";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -19,8 +20,8 @@ const Client = () => {
 
   const [title, setTitle] = useState("");
 
-  const [files, setFiles] = useState<[awsFileType] | null>(null);
-  const [filesToShow, setFilesToShow] = useState<[awsFileType] | null>(null);
+  const [files, setFiles] = useState<awsFileType[] | null>(null);
+  const [filesToShow, setFilesToShow] = useState<awsFileType[] | null>(null);
   const [index, setIndex] = useState(20);
 
   const getFiles = async (company: string, album: string) => {
@@ -43,7 +44,7 @@ const Client = () => {
   }, [slug]);
 
   const getPhotoToShow = (paths: awsFileType[]) => {
-    let pathsToShow = [];
+    let pathsToShow: awsFileType[] = [];
     for (let i = 0; i < index; i++) {
       pathsToShow.push(paths[i]);
     }

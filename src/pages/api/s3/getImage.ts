@@ -1,4 +1,5 @@
 import AWS from "aws-sdk";
+import { NextApiRequest, NextApiResponse } from "next";
 
 AWS.config.update({
   accessKeyId: process.env.ACCESS_KEY_ID,
@@ -8,14 +9,17 @@ AWS.config.update({
 
 const s3 = new AWS.S3();
 
-export default async function handler(req, res) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method === "GET") {
     const { path } = req.query;
     const bucketName = process.env.BUCKET_NAME;
     try {
       const params = {
-        Bucket: bucketName,
-        Key: path,
+        Bucket: bucketName as string,
+        Key: path as string,
       };
 
       const fileStream = s3.getObject(params).createReadStream();
