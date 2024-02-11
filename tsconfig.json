@@ -27,7 +27,8 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "src/server/utils/aws/awsUtils.js"
+    "src/server/utils/aws/awsUtils.js",
+    "src/pages/api/s3/downloadAll.js"
   ],
   "exclude": [
     "node_modules"

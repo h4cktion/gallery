@@ -1,11 +1,5 @@
 import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
 
-// AWS.config.update({
-//   accessKeyId: process.env.ACCESS_KEY_ID,
-//   secretAccessKey: process.env.SECRET_ACCESS_KEY,
-//   region: process.env.REGION,
-// });
-
 const bucketName = process.env.BUCKET_NAME;
 
 export const getFilesList = async (prefix) => {
@@ -39,3 +33,5 @@ export async function deleteFileFromS3(fileName) {
   };
   await s3.deleteObject(params).promise();
 }
+
+export async function getArchiveFromS3(bucketName) {}

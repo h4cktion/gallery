@@ -3,5 +3,23 @@
 @tailwind utilities;
 
 html {
-  @apply text-slate-500
+  @apply text-slate-600
+}
+
+@layer components {
+  .btn-primary {
+    @apply m-2 cursor-pointer rounded-full border-2 border-cyan-400 bg-cyan-400 py-2  px-5 text-xs font-bold text-white hover:border-cyan-400 hover:bg-cyan-100 hover:text-cyan-400;
+  }
+  .btn-secondary {
+    @apply m-2 cursor-pointer rounded-full border-2 border-cyan-400 bg-cyan-100 py-2  px-5 text-xs font-bold text-cyan-400 hover:border-cyan-400 hover:bg-cyan-400 hover:text-white;
+  }
+  .btn-disable {
+    @apply m-2 cursor-pointer rounded-full border-2 border-gray-300 bg-gray-100 py-2  px-5 text-xs font-bold text-gray-400 hover:border-cyan-400 hover:bg-cyan-400 hover:text-white;
+  }
+  .btn-danger {
+    @apply m-2 cursor-pointer rounded-full border-2 border-red-400 bg-red-100 py-2  px-5 text-xs font-bold text-red-400 hover:border-red-400 hover:bg-red-400 hover:text-white;
+  }
+  .btn-link {
+    @apply border-2 border-slate-700 p-4 uppercase text-slate-700 transition duration-300 ease-in-out hover:bg-slate-700 hover:text-white;
+  }
 }

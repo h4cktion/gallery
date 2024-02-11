@@ -63,9 +63,16 @@ const Client = () => {
     }
   }, [reachedBottom, files, index]);
 
+  const download = async () => {
+    const [company, album] = slug as string[];
+    const res = await fetch(
+      `/api/s3/downloadAll?company=${company}&album=${album}`
+    );
+    console.log("res", res);
+  };
   return (
     <div className="mt-20">
-      <div className="my-20">
+      <div>
         <h1 className="text-2xl font-bold">
           {title}
           <span className="ml-4 text-sm font-light">
@@ -73,6 +80,11 @@ const Client = () => {
           </span>
         </h1>
         <p>{(files?.length || 1) - 1} photos</p>
+      </div>
+      <div className="flex justify-center w-full">
+        <button onClick={download} className="btn-link my-4">
+          Tout télécharger
+        </button>
       </div>
       <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 4 }}>
         <Masonry columnsCount={4}>
