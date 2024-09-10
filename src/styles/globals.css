@@ -23,3 +23,18 @@ html {
     @apply border-2 border-slate-700 p-4 uppercase text-slate-700 transition duration-300 ease-in-out hover:bg-slate-700 hover:text-white;
   }
 }
+
+.masonry {
+  display: flex;
+  margin-left: -1rem; /* Adjust the left margin for column spacing */
+  width: auto;
+}
+
+.masonry-column {
+  padding-left: 1rem; /* Adjust the padding for the items */
+  background-clip: padding-box;
+}
+
+.masonry-column > div {
+  margin-bottom: 1rem; /* Adjust the space between items */
+}

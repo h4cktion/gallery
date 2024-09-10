@@ -28,7 +28,7 @@
     "**/*.ts",
     "**/*.tsx",
     "src/server/utils/aws/awsUtils.js",
-    "src/pages/api/s3/downloadAll.js"
+    "src/pages/api/s3/generateZipFile.js"
   ],
   "exclude": [
     "node_modules"

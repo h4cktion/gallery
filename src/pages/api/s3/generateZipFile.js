@@ -6,6 +6,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { PassThrough } from "stream";
 import { S3Client } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 // AWS.config.update({
 //   accessKeyId: process.env.ACCESS_KEY_ID,
@@ -47,6 +48,26 @@ function getWritableStreamFromS3(zipFileS3Key) {
   }).done();
   return _passthrough;
 }
+// async function getWritableStreamFromS3(zipFileS3Key) {
+//   let _passthrough = new PassThrough();
+//   const s3 = new S3(AWS_CONFIG);
+//   const upload = new Upload({
+//     client: s3,
+//     params: {
+//       Bucket: AWS_S3_BUCKET,
+//       Key: zipFileS3Key,
+//       Body: _passthrough,
+//     },
+//   });
+
+//   // Lance l'upload et gère les erreurs
+//   upload
+//     .done()
+//     .then(() => console.log("Upload terminé avec succès"))
+//     .catch((err) => console.error("Erreur lors de l'upload:", err));
+
+//   return _passthrough;
+// }
 
 async function generateAndStreamZipfileToS3(s3KeyList, zipFileS3Key) {
   try {
@@ -59,7 +80,6 @@ async function generateAndStreamZipfileToS3(s3KeyList, zipFileS3Key) {
     const s3WritableStream = getWritableStreamFromS3(zipFileS3Key);
     zip.pipe(s3WritableStream);
     zip.finalize();
-    console.log("Zip file created and streamed to S3.");
   } catch (error) {
     console.error(`Error in generateAndStreamZipfileToS3 ::: ${error.message}`);
   }
@@ -81,19 +101,23 @@ export async function generatePresignedURLforZip(zipFileS3Key) {
 export default async function handler(req, res) {
   if (req.method === "GET") {
     const { company, album } = req.query;
-
     try {
-      const albumPath = `${company}/${album}`;
-      // const albumPath = `${company}/user2`;
-      const filesList = await getFilesList(albumPath);
-
-      console.log("filesList : ", filesList);
-      generateAndStreamZipfileToS3(
-        filesList,
+      const signedUrl = generatePresignedURLforZip(
         `gallery/${company}/ZIPS/${album}/${album}.zip`
       );
+      console.log("signedUrl", signedUrl);
+      res.send(signedUrl);
+      // const albumPath = `${company}/${album}`;
+      // const filesList = await getFilesList(albumPath);
+
+      // await generateAndStreamZipfileToS3(
+      //   filesList,
+      //   `gallery/${company}/ZIPS/${album}/${album}.zip`
+      // );
     } catch (error) {
-      throw `Erreur lors de la création de l'archive :${error}`;
+      return res
+        .status(500)
+        .json({ error: `Erreur lors de la création de l'archive :${error}` });
     }
   } else {
     return res.status(405).json({ error: "Méthode non autorisée." });

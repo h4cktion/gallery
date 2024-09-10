@@ -1,8 +1,6 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import ImageCustom from "@/components/img/ImageCustom";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import usePageBottom from "@/hooks/useReachPageBottom";
 
 type awsFileType = {
@@ -19,19 +17,25 @@ const Client = () => {
   const reachedBottom = usePageBottom();
 
   const [title, setTitle] = useState("");
-
   const [files, setFiles] = useState<awsFileType[] | null>(null);
   const [filesToShow, setFilesToShow] = useState<awsFileType[] | null>(null);
   const [index, setIndex] = useState(20);
+  const [columns, setColumns] = useState(3); // Pour gérer le nombre de colonnes du Masonry
 
   const getFiles = async (company: string, album: string) => {
     const res = await fetch(
       `/api/s3/getListBucket?company=${company}&album=${album}`
     );
     const result = await res.json();
-    if (result) {
-      setFiles(result);
-      getPhotoToShow(result);
+    let tableau = [...result];
+    tableau.sort(
+      (a, b) =>
+        new Date(a.LastModified).getTime() - new Date(b.LastModified).getTime()
+    );
+
+    if (tableau) {
+      setFiles(tableau);
+      getPhotoToShow(tableau);
     }
   };
 
@@ -46,7 +50,9 @@ const Client = () => {
   const getPhotoToShow = (paths: awsFileType[]) => {
     let pathsToShow: awsFileType[] = [];
     for (let i = 0; i < index; i++) {
-      pathsToShow.push(paths[i]);
+      if (paths[i] && !paths[i].Key.includes(".zip")) {
+        pathsToShow.push(paths[i]);
+      }
     }
     setFilesToShow(pathsToShow);
   };
@@ -63,13 +69,47 @@ const Client = () => {
     }
   }, [reachedBottom, files, index]);
 
-  const download = async () => {
+  useEffect(() => {
+    const updateColumns = () => {
+      if (window.innerWidth >= 1024) setColumns(4); // Large screens: 4 columns
+      else if (window.innerWidth >= 768)
+        setColumns(3); // Medium screens: 3 columns
+      else setColumns(2); // Small screens: 2 columns
+    };
+
+    window.addEventListener("resize", updateColumns);
+    updateColumns(); // Call it initially to set the column count
+
+    return () => window.removeEventListener("resize", updateColumns);
+  }, []);
+
+  const downloadFile = async () => {
     const [company, album] = slug as string[];
-    const res = await fetch(
-      `/api/s3/downloadAll?company=${company}&album=${album}`
-    );
-    console.log("res", res);
+    try {
+      const response = await fetch(
+        `/api/s3/generatePresignedUrl?company=${company}&album=${album}`
+      );
+      const data = await response.json();
+      const a = document.createElement("a");
+      a.href = data.url;
+      a.download = "file.zip";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (error) {
+      console.error("There was an error downloading the file:", error);
+    }
   };
+
+  // Créer les colonnes du Masonry
+  const masonryColumns = () => {
+    const columnsArray = Array.from({ length: columns }, () => []);
+    filesToShow?.forEach((file, index) => {
+      columnsArray[index % columns].push(file);
+    });
+    return columnsArray;
+  };
+
   return (
     <div className="mt-20">
       <div>
@@ -82,20 +122,25 @@ const Client = () => {
         <p>{(files?.length || 1) - 1} photos</p>
       </div>
       <div className="flex justify-center w-full">
-        <button onClick={download} className="btn-link my-4">
+        <button onClick={downloadFile} className="btn-link my-4">
           Tout télécharger
         </button>
       </div>
-      <ResponsiveMasonry columnsCountBreakPoints={{ 350: 1, 750: 2, 900: 4 }}>
-        <Masonry columnsCount={4}>
-          {filesToShow &&
-            filesToShow.map(({ Key, Size }) => {
-              if (Size === 0) return;
-              return <ImageCustom key={Key} url={Key} />;
+
+      <div className="masonry">
+        {masonryColumns().map((column, colIndex) => (
+          <div key={colIndex} className="masonry-column">
+            {column.map(({ Key, Size }) => {
+              if (Size === 0) return null;
+              return (
+                <div key={Key} className="relative">
+                  <ImageCustom url={Key} />
+                </div>
+              );
             })}
-          {(!files || files.length <= 0) && <span>Album vide.</span>}
-        </Masonry>
-      </ResponsiveMasonry>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
