@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import ImageCustom from "@/components/img/ImageCustom";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
