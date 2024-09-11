@@ -103,7 +103,11 @@ const Client = () => {
 
   // Créer les colonnes du Masonry
   const masonryColumns = () => {
-    const columnsArray = Array.from({ length: columns }, () => []);
+    const columnsArray: awsFileType[][] = Array.from(
+      { length: columns },
+      () => [] as awsFileType[]
+    );
+
     filesToShow?.forEach((file, index) => {
       columnsArray[index % columns].push(file);
     });
