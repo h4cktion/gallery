@@ -3,6 +3,10 @@ import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
 const bucketName = process.env.BUCKET_NAME;
 
 export const getFilesList = async (prefix) => {
+  console.log("process.env.BUCKET_NAME", process.env.BUCKET_NAME);
+  console.log("process.env.REGION", process.env.REGION);
+  console.log("process.env.ACCESS_KEY_ID", process.env.ACCESS_KEY_ID);
+  console.log("process.env.SECRET_ACCESS_KEY", process.env.SECRET_ACCESS_KEY);
   try {
     const s3Client = new S3Client({
       region: process.env.REGION,
