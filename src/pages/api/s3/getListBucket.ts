@@ -9,7 +9,7 @@ export default async function handler(
 ) {
   if (req.method === "GET") {
     const { company, album } = req.query;
-
+console.log('ici')
     try {
       const albumPath = `${company}/${album}`;
       const filesList = await getFilesList(albumPath);
